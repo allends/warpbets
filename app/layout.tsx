@@ -6,10 +6,10 @@ export const metadata: Metadata = {
   title: "frames.js starter",
   description: "...",
   // add more meta tags here
-  other: {
-    'fc:frame': 'vNext',
-    'fc:frame:image': [`${process.env.NEXT_PUBLIC_VERCEL_URL}/next.svg`],
-  }
+  // other: {
+  //   'fc:frame': 'vNext',
+  //   'fc:frame:image': [`${process.env.NEXT_PUBLIC_VERCEL_URL}/next.svg`],
+  // }
 };
 
 export default function RootLayout({
