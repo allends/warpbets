@@ -6,7 +6,7 @@ import { Frame } from "./components/Frame";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "frames.js starter",
+    title: "frames.js starter example meta",
     description: "This is a frames.js starter template",
     other: {
       ...(await fetchMetadata(createExampleURL("/frames"))),

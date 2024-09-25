@@ -7,8 +7,8 @@ export const metadata: Metadata = {
   description: "...",
   // add more meta tags here
   other: {
-    'fc:frame': 'https://static.displate.com/857x1200/displate/2023-02-22/fd7b9f64dba3cc0af23a4af3585c617f_64aae34bedd367448ea2dc235558300a.jpg',
-    'fc:frame:image': 'https://static.displate.com/857x1200/displate/2023-02-22/fd7b9f64dba3cc0af23a4af3585c617f_64aae34bedd367448ea2dc235558300a.jpg',
+    'fc:frame': 'vNext',
+    'fc:frame:image': [`${process.env.NEXT_PUBLIC_VERCEL_URL}/next.svg`],
   }
 };
 
