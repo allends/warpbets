@@ -15,16 +15,18 @@ export const frames = createFrames({
 
 export const POST = frames(async (ctx) => {
 
-	if (!ctx.message?.isValid) {
-		throw new Error('Invalid message')
-	}
-
 	const { message, searchParams } = ctx
 	const outcome: string | undefined = searchParams?.['outcome']
 
-	// send them back to the main page
 	if (!message || !outcome) {
-		return redirect('/?error=amount')
+		return {
+			image: <div>Fill out the prediction form!</div>,
+			buttons: [
+				<Button key="button" action="post" target="/main">
+					{`I'll do that`}
+				</Button>,
+			],
+		}
 	}
 
 	const { inputText, requesterUserData } = message
@@ -33,7 +35,7 @@ export const POST = frames(async (ctx) => {
 		return {
 			image: <div>Please login to make a prediction</div>,
 			buttons: [
-				<Button key="button" action="post">
+				<Button key="button" action="post" target="/main">
 					Fine
 				</Button>,
 			],
@@ -43,12 +45,17 @@ export const POST = frames(async (ctx) => {
 	const amount = parseFloat(inputText ?? '')
 
 	if (isNaN(amount)) {
-		return redirect('/', {
-			headers: {
-				'x-error': 'Please enter a valid amount',
-			}
-		})
+		return {
+			image: <div>Enter a valid amount to bet please</div>,
+			buttons: [
+				<Button key="button" action="post" target="/main">
+					I understand
+				</Button>,
+			],
+		}
 	}
+
+	// this is where we can create the entry for the bet
 
 	return {
 		image: (
