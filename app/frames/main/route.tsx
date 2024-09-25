@@ -11,13 +11,24 @@ const frameHandler = frames(async (ctx) => {
 
 	return {
 		image: (
-			<div tw="flex flex-col">
-				<div tw="flex">
-					Okay {user?.displayName}, lets make a bet...
+			<div tw="h-4/5 w-4/5 flex flex-col justify-between gap-4">
+				<div tw="flex flex-col items-start">
+					<div tw="flex text-left text-blue-500" style={{
+						fontFamily: 'Ankh Sanctuary',
+						fontSize: "8rem",
+					}}>
+						{user?.displayName},
+					</div>
+					<div>
+						how much will you wager that
+					</div>
 				</div>
-				<div tw="flex">
+				<div tw="flex mt-5" style={{
+					fontFamily: "Inter",
+					fontWeight: 700
+				}}>
 					There will be over 10,000 Kramer predictions before 9/29
-					midnight
+					midnight?
 				</div>
 			</div>
 		),
@@ -28,14 +39,14 @@ const frameHandler = frames(async (ctx) => {
 				action="post"
 				target={{ pathname: '/submit', query: { outcome: 'yes' } }}
 			>
-				Yes
+				on yes
 			</Button>,
 			<Button
 				key="no"
 				action="post"
 				target={{ pathname: '/submit', query: { outcome: 'no' } }}
 			>
-				No
+				on no
 			</Button>,
 		],
 	}

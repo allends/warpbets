@@ -32,11 +32,11 @@ export const frames = createFrames({
 				'FiraCodeiScript-Regular.ttf'
 			)
 		)
-		const [interBoldFontData, firaScriptData, ankhSanctuaryFontData, interRegularData] = await Promise.all([
+		const [interRegularData, interBoldFontData, firaScriptData, ankhSanctuaryFontData] = await Promise.all([
+			interFontRegular,
 			interBoldFont,
 			firaScriptFont,
 			ankhSanctuaryFont,
-			interFontRegular
 		])
 		return {
 			imageOptions: {

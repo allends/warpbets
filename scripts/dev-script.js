@@ -57,10 +57,6 @@ process.env.APP_URL = `http://localhost:${nextPort}`;
 if (!process.env.FJS_MONOREPO) {
   const url = `http://localhost:${nextPort}`;
 
-  const examples = await getExamplesFromDirectory(nextPort);
-
-  process.env.DEBUGGER_EXAMPLES_JSON = JSON.stringify(examples);
-
   command = "concurrently";
   args = [
     "--kill-others",

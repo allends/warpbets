@@ -27,7 +27,7 @@ export default async function Home() {
       </div>
       <Frame metadata={metadata} url={createExampleURL("/frames")} />
       <div className="flex w-full">
-        <Link href="/examples" className="underline ml-auto">
+        <Link href="/" className="underline ml-auto">
           See other examples
         </Link>
       </div>
