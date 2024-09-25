@@ -37,14 +37,14 @@ const frameHandler = frames(async (ctx) => {
 			<Button
 				key="yes"
 				action="post"
-				target={{ pathname: '/submit', query: { outcome: 'yes' } }}
+				target={{ pathname: '/submit', query: { outcome: 'positive' } }}
 			>
 				on yes
 			</Button>,
 			<Button
 				key="no"
 				action="post"
-				target={{ pathname: '/submit', query: { outcome: 'no' } }}
+				target={{ pathname: '/submit', query: { outcome: 'negative' } }}
 			>
 				on no
 			</Button>,
