@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import "dotenv/config";
 
 export const metadata: Metadata = {
   // without a title, warpcast won't validate your frame

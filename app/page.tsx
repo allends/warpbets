@@ -26,8 +26,8 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import { CalendarIcon } from 'lucide-react'
-import FrameService from './db/frame'
 import { useState } from 'react'
+import { gameFrame } from './utils/parsers'
 
 const formSchema = z.object({
 	label: z.string().min(5).max(200),
@@ -52,15 +52,21 @@ export default function Home() {
 	})
 
 	async function onSubmit(data: z.infer<typeof formSchema>) {
-		const frame = await FrameService.createFrame({
-			label: data.label,
-			optionA: data.optionA,
-			optionB: data.optionB,
-			expiration: data.expiration.getTime(),
+		const response = await fetch('/api/frame', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				...data,
+				expiration: data.expiration.getTime(),
+			}),
 		})
-
-		if (frame) {
-			setFrameId(frame.id)
+		const json = await response.json()
+		const parsedResponse = gameFrame.safeParse(json)
+		if (parsedResponse.success) {
+			console.log(parsedResponse.data)
+			setFrameId(parsedResponse.data.id)
 		}
 	}
 
@@ -170,9 +176,11 @@ export default function Home() {
 			</Form>
 			{
 				frameId && (
-					<Link href={`/frames/${frameId}`}>
-						<a>View Frame</a>
-					</Link>
+					<Button onClick={() => {
+						navigator.clipboard.writeText(`${window.location.origin}/frames/${frameId}`)
+					}}>
+						copy link
+					</Button>
 				)
 			}
 		</div>
