@@ -13,7 +13,6 @@ const frames = createFrames({
 })
 
 export const POST = frames(async (ctx) => {
-	console.log(ctx)
 
 	const { message, searchParams } = ctx
 	const outcome: string | undefined = searchParams?.['outcome']

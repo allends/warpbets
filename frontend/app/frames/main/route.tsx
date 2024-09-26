@@ -38,6 +38,7 @@ const frameHandler = frames(async (ctx) => {
 				key="yes"
 				action="tx"
 				target={{ pathname: '/submit', query: { outcome: 'positive' } }}
+				post_url={'/success'}
 			>
 				on yes
 			</Button>,
@@ -45,6 +46,7 @@ const frameHandler = frames(async (ctx) => {
 				key="no"
 				action="tx"
 				target={{ pathname: '/submit', query: { outcome: 'negative' } }}
+				post_url={'/success'}
 			>
 				on no
 			</Button>,

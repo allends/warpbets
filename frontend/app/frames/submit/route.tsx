@@ -3,7 +3,9 @@ import { Button, createFrames } from 'frames.js/next'
 import { DEFAULT_DEBUGGER_HUB_URL } from '../../debug'
 import BetService, { isBetType } from '../../db/bets';
 import { transaction } from 'frames.js/core';
-import abi from './bet.json'
+import abi from './bet.json' assert { type: "json" };
+import { base } from 'viem/chains';
+import { Abi, encodeFunctionData } from 'viem';
 
 const frames = createFrames({
 	basePath: '/frames',
@@ -22,14 +24,6 @@ export const POST = frames(async (ctx) => {
 
 	if (!message || !outcome || !isBetType(outcome)) {
 		throw new Error('Invalid message')
-		return {
-			image: <div>Fill out the prediction form!</div>,
-			buttons: [
-				<Button key="button" action="post" target="/main">
-					{`I'll do that`}
-				</Button>,
-			],
-		}
 	}
 
 	const { inputText, requesterUserData } = message
@@ -38,72 +32,33 @@ export const POST = frames(async (ctx) => {
 
 	if (!displayName || !username) {
 		throw new Error('Invalid user')
-		return {
-			image: <div>Please login to make a prediction</div>,
-			buttons: [
-				<Button key="button" action="post" target="/main">
-					Fine
-				</Button>,
-			],
-		}
 	}
 
-	// const existingBet = await BetService.getUserBet(username, outcome)
+	const existingBet = await BetService.getUserBet(username, outcome)
 
-	// if (existingBet) {
-	// 	return {
-	// 		image: (
-	// 			<div>
-	// 				{`You've already bet ${existingBet} on ${outcome}`}
-	// 			</div>
-	// 		),
-	// 		buttons: [
-	// 			<Button key="button" action="post" target="/main">
-	// 				Alrighty
-	// 			</Button>,
-	// 		],
-	// 	}
-	// }
+	if (existingBet) {
+		throw new Error('Bet already exists')
+	}
 
 	const amount = parseFloat(inputText ?? '')
 
 	if (isNaN(amount)) {
 		throw new Error('Invalid amount')
-		return {
-			image: <div>Enter a valid amount to bet please</div>,
-			buttons: [
-				<Button key="button" action="post" target="/main">
-					I understand
-				</Button>,
-			],
-		}
 	}
 
-	// // this is where we can create the entry for the bet
-	// const userBet = await BetService.createUserBet(username, outcome, amount, outcome)
-
-	// if (!userBet) {
-	// 	// throw new Error('Failed to create bet')
-	// 	return {
-	// 		image: <div>Something went wrong, try again later</div>,
-	// 		buttons: [
-	// 			<Button key="button" action="post" target="/main">
-	// 				Ok
-	// 			</Button>,
-	// 		],
-	// 	}
-	// }
-
-	const tx = transaction({
-		method: 'eth_sendTransaction',
-		params: {
-			abi: abi as any,
-			to: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
-		},
-		chainId: 'custom:666666666'
+	const callData = encodeFunctionData({
+		abi: abi,
+		functionName: 'putStake',
+		args: [outcome === 'positive', amount]
 	})
 
-	console.log(tx)
-
-	return tx
+	return transaction({
+		method: 'eth_sendTransaction',
+		params: {
+			abi: abi as Abi,
+			data: callData,
+			to: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
+		},
+		chainId: 'eip155:' + base.id
+	})
 })

@@ -20,7 +20,7 @@ const frameHandler = frames(async (ctx) => {
 			</div>
 		),
 		buttons: [
-			<Button action="post" target={{ pathname: '/main' }}>
+			<Button action="post" target={{ pathname: '/results' }}>
 				{`I'm in!`}
 			</Button>,
 		],
