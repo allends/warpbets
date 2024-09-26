@@ -1,10 +1,27 @@
 import { Button } from 'frames.js/next'
 import { frames } from '../frames'
+import FrameService from '../../db/frame'
 
 const frameHandler = frames(async (ctx) => {
 
 	if (!ctx.message?.isValid) {
 		throw new Error('Invalid message')
+	}
+
+	let frame = await FrameService.getFrame('default')
+
+	if (!frame) {
+		frame = await FrameService.createFrame({
+			id: 'default',
+			label: 'There will be over 10,000 Kramer predictions before 9/29 midnight?',
+			optionA: 'Yes',
+			optionB: 'No',
+			expiration: (new Date('9/29/2021 23:59:59')).getTime(),
+		})
+	}
+
+	if (!frame) {
+		throw new Error('Could not create default game')
 	}
 
 	const user = ctx.message.requesterUserData
@@ -27,8 +44,7 @@ const frameHandler = frames(async (ctx) => {
 					fontFamily: "Inter",
 					fontWeight: 700
 				}}>
-					There will be over 10,000 Kramer predictions before 9/29
-					midnight?
+					{frame.label}
 				</div>
 			</div>
 		),
@@ -36,19 +52,17 @@ const frameHandler = frames(async (ctx) => {
 		buttons: [
 			<Button
 				key="yes"
-				action="tx"
-				target={{ pathname: '/submit', query: { outcome: 'positive' } }}
-				post_url={'/success'}
+				action="post"
+				target={{ pathname: '/submit', query: { option: 'a', frameId: frame.id } }}
 			>
-				on yes
+				{frame.optionA}
 			</Button>,
 			<Button
 				key="no"
-				action="tx"
-				target={{ pathname: '/submit', query: { outcome: 'negative' } }}
-				post_url={'/success'}
+				action="post"
+				target={{ pathname: '/submit', query: { option: 'b', frameId: frame.id } }}
 			>
-				on no
+				{frame.optionB}
 			</Button>,
 		],
 	}

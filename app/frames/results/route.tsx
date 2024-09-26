@@ -1,7 +1,8 @@
 import { farcasterHubContext } from 'frames.js/middleware'
 import { Button, createFrames } from 'frames.js/next'
 import { DEFAULT_DEBUGGER_HUB_URL } from '../../debug'
-import BetService from '../../db/bets'
+import FrameService from '../../db/frame'
+import { z } from 'zod'
 
 const frames = createFrames({
 	basePath: '/frames',
@@ -13,14 +14,32 @@ const frames = createFrames({
 	debug: process.env.NODE_ENV === 'development',
 })
 
+const searchParamsSchema = z.object({
+	frameId: z.string(),
+})
+
+const ctxSchema = z.object({
+	searchParams: searchParamsSchema,
+})
+
 export const POST = frames(async (ctx) => {
-	console.log('here')
+	console.log('here: ', ctx.searchParams)
 
-	const { positiveCount, negativeCount, bets } = await BetService.listBets(
-		'kramer'
-	)
+	const result = ctxSchema.safeParse(ctx)
 
-	const totalCount = positiveCount + negativeCount
+	if (result.success === false) {
+		throw new Error('Invalid Context Input')
+	}
+
+	const wagerSummary = await FrameService.listFrameWagers(result.data.searchParams.frameId)
+
+	if (!wagerSummary) {
+		throw new Error('No wagers found')
+	}
+
+	const totalCount = wagerSummary.wagers.length
+	const positiveCount = wagerSummary.optionACount
+	const negativeCount = wagerSummary.optionBCount
 
 	return {
 		image: (

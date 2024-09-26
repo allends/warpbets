@@ -1,8 +1,14 @@
 import { farcasterHubContext } from 'frames.js/middleware'
 import { createFrames } from 'frames.js/next'
 import { DEFAULT_DEBUGGER_HUB_URL } from '../debug'
+import z from 'zod'
 import path from 'path'
 import * as fs from 'node:fs/promises'
+
+const loadFont = (fontPath: string) => {
+	const fontAbsolutePath = path.join(path.resolve(process.cwd(), 'public'), fontPath)
+	return fs.readFile(fontAbsolutePath)
+}
 
 export const frames = createFrames({
 	basePath: '/frames',
@@ -14,30 +20,21 @@ export const frames = createFrames({
 	debug: process.env.NODE_ENV === 'development',
 	imageRenderingOptions: async () => {
 
-		const ankhSanctuaryFont = fs.readFile(
-			path.join(path.resolve(process.cwd(), 'public'), 'AnkhSanctuary.ttf')
-		)
+		const ankhSanctuaryFont = loadFont('AnkhSanctuary.ttf')
 
-		const interFontRegular = fs.readFile(
-			path.join(path.resolve(process.cwd(), 'public'), 'Inter-Regular.ttf')
-		)
+		const interFontRegular = loadFont('Inter-Regular.ttf')
 
-		const interBoldFont = fs.readFile(
-			path.join(path.resolve(process.cwd(), 'public'), 'Inter-Bold.ttf')
-		)
+		const interBoldFont = loadFont('Inter-Bold.ttf')
 
-		const firaScriptFont = fs.readFile(
-			path.join(
-				path.resolve(process.cwd(), 'public'),
-				'FiraCodeiScript-Regular.ttf'
-			)
-		)
+		const firaScriptFont = loadFont('FiraCodeiScript-Regular.ttf')
+
 		const [interRegularData, interBoldFontData, firaScriptData, ankhSanctuaryFontData] = await Promise.all([
 			interFontRegular,
 			interBoldFont,
 			firaScriptFont,
 			ankhSanctuaryFont,
 		])
+
 		return {
 			imageOptions: {
 				fonts: [
