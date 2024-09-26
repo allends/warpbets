@@ -24,18 +24,8 @@ import {
 } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { Calendar } from "@/components/ui/calendar"
-import { CalendarIcon } from "lucide-react"
-
-export async function generateMetadata(): Promise<Metadata> {
-	return {
-		title: 'frames.js starter example meta',
-		description: 'This is a frames.js starter template',
-		other: {
-			...(await fetchMetadata(createExampleURL('/frames'))),
-		},
-	}
-}
+import { Calendar } from '@/components/ui/calendar'
+import { CalendarIcon } from 'lucide-react'
 
 const formSchema = z.object({
 	label: z.string(),
