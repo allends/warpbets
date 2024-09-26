@@ -26,16 +26,21 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import { CalendarIcon } from 'lucide-react'
+import FrameService from './db/frame'
+import { useState } from 'react'
 
 const formSchema = z.object({
-	label: z.string(),
-	optionA: z.string(),
-	optionB: z.string(),
+	label: z.string().min(5).max(200),
+	optionA: z.string().min(1),
+	optionB: z.string().min(1),
 	expiration: z.date(),
 })
 
 // This is a react server component only
 export default function Home() {
+
+	const [frameId, setFrameId] = useState<string | null>(null)
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -46,13 +51,24 @@ export default function Home() {
 		},
 	})
 
-	function onSubmit(data: z.infer<typeof formSchema>) {
-		console.log(data)
+	async function onSubmit(data: z.infer<typeof formSchema>) {
+		const frame = await FrameService.createFrame({
+			label: data.label,
+			optionA: data.optionA,
+			optionB: data.optionB,
+			expiration: data.expiration.getTime(),
+		})
+
+		if (frame) {
+			setFrameId(frame.id)
+		}
 	}
 
 	return (
-		<div className="flex flex-col max-w-[600px] w-full gap-2 mx-auto p-2">
-			<div className="pb-4">Create a new frame</div>
+		<div className="flex flex-col max-w-[600px] w-full gap-4 mx-auto p-2 justify-center">
+			<h1 className="mt-24 mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+				Create a new frame
+			</h1>
 			<Form {...form}>
 				<FormField
 					name="label"
@@ -60,7 +76,7 @@ export default function Home() {
 					render={({ field }) => {
 						return (
 							<FormItem>
-								<FormLabel>Label</FormLabel>
+								<FormLabel>Condition</FormLabel>
 								<FormControl>
 									<Input {...field} placeholder="Label" />
 								</FormControl>
@@ -68,48 +84,50 @@ export default function Home() {
 						)
 					}}
 				/>
-				<FormField
-					name="optionA"
-					control={form.control}
-					render={({ field }) => {
-						return (
-							<FormItem>
-								<FormLabel>Option A</FormLabel>
-								<FormControl>
-									<Input {...field} placeholder="Yes" />
-								</FormControl>
-							</FormItem>
-						)
-					}}
-				/>
-				<FormField
-					name="optionB"
-					control={form.control}
-					render={({ field }) => {
-						return (
-							<FormItem>
-								<FormLabel>Option B</FormLabel>
-								<FormControl>
-									<Input {...field} placeholder="No" />
-								</FormControl>
-							</FormItem>
-						)
-					}}
-				/>
+				<div className="grid grid-cols-2 gap-2 justify-between">
+					<FormField
+						name="optionA"
+						control={form.control}
+						render={({ field }) => {
+							return (
+								<FormItem>
+									<FormLabel>Option A</FormLabel>
+									<FormControl>
+										<Input {...field} placeholder="Yes" />
+									</FormControl>
+								</FormItem>
+							)
+						}}
+					/>
+					<FormField
+						name="optionB"
+						control={form.control}
+						render={({ field }) => {
+							return (
+								<FormItem>
+									<FormLabel>Option B</FormLabel>
+									<FormControl>
+										<Input {...field} placeholder="No" />
+									</FormControl>
+								</FormItem>
+							)
+						}}
+					/>
+				</div>
 				<FormField
 					name="expiration"
 					control={form.control}
 					render={({ field }) => {
 						return (
-							<FormItem className="flex flex-col">
-								<FormLabel>Date of birth</FormLabel>
+							<FormItem className="flex flex-col w-full">
+								<FormLabel>Contest Expiration</FormLabel>
 								<Popover>
 									<PopoverTrigger asChild>
 										<FormControl>
 											<Button
 												variant={'outline'}
 												className={cn(
-													'w-[240px] pl-3 text-left font-normal',
+													'w-full pl-3 text-left font-normal',
 													!field.value &&
 														'text-muted-foreground'
 												)}
@@ -132,23 +150,31 @@ export default function Home() {
 											selected={field.value}
 											onSelect={field.onChange}
 											disabled={(date: Date) =>
-												date > new Date() ||
-												date < new Date('1900-01-01')
+												date < new Date()
 											}
 											initialFocus
 										/>
 									</PopoverContent>
 								</Popover>
 								<FormDescription>
-									Your date of birth is used to calculate your
-									age.
+									This is when the contest will be closed.
 								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)
 					}}
 				/>
+				<Button onClick={form.handleSubmit(onSubmit)}>
+					Create Frame
+				</Button>
 			</Form>
+			{
+				frameId && (
+					<Link href={`/frames/${frameId}`}>
+						<a>View Frame</a>
+					</Link>
+				)
+			}
 		</div>
 	)
 }

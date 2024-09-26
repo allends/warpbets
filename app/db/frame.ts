@@ -1,10 +1,9 @@
-import { randomUUID } from "crypto";
 import { createGameWagerKey, gameFrame, TGameFrame, gameWager, TGameWager } from "../utils/parsers";
 import { kv } from "@vercel/kv";
-import { create } from "domain";
+import { v4 as uuidv4 } from 'uuid';
 
 const createFrame = async (frame: Omit<TGameFrame, "id"> & { id?: string }): Promise<TGameFrame | undefined> => {
-	const id = frame.id ?? randomUUID()
+	const id = frame.id ?? uuidv4()
 
 	const newFrame = {
 		...frame,
