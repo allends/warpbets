@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import FrameService from '../../db/frame'
 import { z } from 'zod'
 
-export const createGameFrame = z.object({
+const createGameFrame = z.object({
 	label: z.string(),
 	optionA: z.string(),
 	optionB: z.string(),
