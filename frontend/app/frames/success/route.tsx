@@ -2,7 +2,7 @@ import { farcasterHubContext } from 'frames.js/middleware'
 import { Button, createFrames } from 'frames.js/next'
 import { DEFAULT_DEBUGGER_HUB_URL } from '../../debug'
 
-export const frames = createFrames({
+const frames = createFrames({
 	basePath: '/frames',
 	middleware: [
 		farcasterHubContext({

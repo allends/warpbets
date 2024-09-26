@@ -4,7 +4,7 @@ import { DEFAULT_DEBUGGER_HUB_URL } from '../../debug'
 import BetService, { isBetType } from '../../db/bets';
 import { transaction } from 'frames.js/core';
 
-export const frames = createFrames({
+const frames = createFrames({
 	basePath: '/frames',
 	middleware: [
 		farcasterHubContext({
