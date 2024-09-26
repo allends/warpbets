@@ -1,11 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.27;
-
-interface IERC20 {
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
-    function transfer(address recipient, uint256 amount) external returns (bool);
-    function balanceOf(address account) external view returns (uint256);
-}
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Bet {
 
@@ -18,13 +13,13 @@ contract Bet {
     uint public expirationTime;
 
     // Display Information about this bet
-    string message;
-    string optionA;
-    string optionB;
+    string public message;
+    string public optionA;
+    string public optionB;
 
-    // Determining outcome
-    bool public outcomeSet;
-    bool public outcome; // true = outcome A wins, false = outcome B wins
+    // Determining outcome (hard coded for now, this won't get 10,000 bets :( unfortunately)
+    bool public outcomeSet = true;
+    bool public outcome = false; // true = outcome A wins, false = outcome B wins
 
     mapping(address => uint256) public stakesA;
     mapping(address => uint256) public stakesB;
@@ -32,8 +27,12 @@ contract Bet {
     uint256 public totalStakesA;
     uint256 public totalStakesB;
 
-    constructor(uint256 _betDuration) {
-        expirationTime = block.timestamp + _betDuration;
+    constructor(uint256 _expirationTime, string memory _message, string memory _optionA, string memory _optionB) {
+        sbatToken = IERC20(0x48ebb7cb09F1D4753C1d3A35c55d2507c64D34cb);
+        expirationTime = _expirationTime;
+        message = _message;
+        optionA = _optionA;
+        optionB = _optionB;
     }
 
     modifier onlyOwner() {
@@ -57,11 +56,11 @@ contract Bet {
     }
 
     // Function for users to stake SBAT on outcome A (true) or B (false)
-    function putStake(address _sbatToken, bool _onOutcomeA, uint256 _amount) public beforeDeadline {
-        sbatToken = IERC20(_sbatToken);
+    function putStake(bool _onOutcomeA, uint256 _amount) public beforeDeadline {
         require(_amount > 0, "Cannot stake 0");
 
-        sbatToken.transferFrom(msg.sender, address(this), _amount);
+        bool result = sbatToken.transferFrom(msg.sender, address(this), _amount);
+        require(result, "Transfer failed");
 
         if (_onOutcomeA) {
             stakesA[msg.sender] += _amount;
