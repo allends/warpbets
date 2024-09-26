@@ -1,6 +1,15 @@
 /* eslint-disable react/jsx-key */
 import { Button } from 'frames.js/next'
 import { frames } from './frames'
+import { z } from 'zod'
+
+const searchParamsSchema = z.object({
+	frameId: z.string().optional(),
+})
+
+const ctxSchema = z.object({
+	searchParams: searchParamsSchema,
+})
 
 const frameHandler = frames(async (ctx) => {
 	return {
@@ -20,7 +29,12 @@ const frameHandler = frames(async (ctx) => {
 			</div>
 		),
 		buttons: [
-			<Button action="post" target={{ pathname: '/main' }}>
+			<Button
+				action="post"
+				target={{
+					pathname: '/default',
+				}}
+			>
 				{`I'm in!`}
 			</Button>,
 		],

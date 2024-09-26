@@ -23,7 +23,6 @@ const ctxSchema = z.object({
 })
 
 export const POST = frames(async (ctx) => {
-	console.log('here: ', ctx.searchParams)
 
 	const result = ctxSchema.safeParse(ctx)
 

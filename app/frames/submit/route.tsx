@@ -9,6 +9,7 @@ import { TGameFrame, TGameWager, TUser, userSchema } from '../../utils/parsers'
 import FrameService from '../../db/frame'
 
 const Receipt = (data: {
+	title: string
 	frame: TGameFrame
 	wager: TGameWager
 	user: TUser
@@ -30,7 +31,7 @@ const Receipt = (data: {
 				<div tw="text-blue-500 mb-4" style={{
 					fontFamily: 'Ankh Sanctuary',
 					fontSize: '4rem',
-				}}>Wager placed</div>
+				}}>{data.title}</div>
 				<div tw="border border-slate-400 rounded-md flex flex-col p-8">
 					<Row label="Owner" value={user.username} />
 					<Row label="Stakes" value={frame.label} />
@@ -45,7 +46,7 @@ const Receipt = (data: {
 				action="post"
 				target={{ pathname: '/results', query: { frameId: frame.id } }}
 			>
-				See results
+				See Current Wagers
 			</Button>,
 		],
 	}
@@ -106,6 +107,13 @@ export const POST = frames(async (ctx) => {
 			option,
 			amount: inputText,
 		})
+	} else {
+		return Receipt({
+			title: 'You have already bet!',
+			frame,
+			wager: bet,
+			user: requesterUserData,
+		})
 	}
 
 	if (!bet) {
@@ -113,6 +121,7 @@ export const POST = frames(async (ctx) => {
 	}
 
 	return Receipt({
+		title: 'Wager Placed!',
 		frame,
 		wager: bet,
 		user: requesterUserData,
