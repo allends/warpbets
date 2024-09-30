@@ -36,7 +36,7 @@ export const POST = frames(async (ctx) => {
 		throw new Error('No wagers found')
 	}
 
-	const totalCount = wagerSummary.wagers.length
+	const totalCount = wagerSummary.optionACount + wagerSummary.optionBCount
 	const positiveCount = wagerSummary.optionACount
 	const negativeCount = wagerSummary.optionBCount
 

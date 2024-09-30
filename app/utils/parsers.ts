@@ -41,6 +41,16 @@ export const isGameWager = (wager: unknown): wager is TGameWager => {
 	return gameWager.safeParse(wager).success
 }
 
+// Game Summary
+export const gameSummary = z.object({
+	optionACount: z.number(),
+	optionBCount: z.number(),
+	optionBTotal: z.number(),
+	optionATotal: z.number(),
+})
+
 export type TGameWager = z.infer<typeof gameWager>
 
 export const createGameWagerKey = (frameId: string, userId: string) => `wager:${frameId}:${userId}`
+
+export const createGameSummaryKey = (frameId: string) => `wagerSummary:${frameId}`

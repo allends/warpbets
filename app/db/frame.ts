@@ -1,4 +1,4 @@
-import { createGameWagerKey, gameFrame, TGameFrame, gameWager, TGameWager } from "../utils/parsers";
+import { createGameWagerKey, gameFrame, TGameFrame, gameWager, TGameWager, createGameSummaryKey, gameSummary } from "../utils/parsers";
 import { kv } from "@vercel/kv";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -39,6 +39,35 @@ const createWager = async (wager: TGameWager): Promise<TGameWager | undefined> =
 	const id = createGameWagerKey(wager.frameId, wager.username)
 	const result = await kv.set(id, wager)
 
+	const summaryKey = createGameSummaryKey(wager.frameId)
+
+	const _summary = await kv.get(summaryKey)
+
+	let { success, data } = gameSummary.safeParse(_summary)
+
+	if (!success) {
+		data = {
+			optionACount: 0,
+			optionBCount: 0,
+			optionATotal: 0,
+			optionBTotal: 0,
+		}
+	}
+
+	if (!data) {
+		return undefined
+	}
+
+	if(wager.option === 'a') {
+		data.optionACount++
+		data.optionATotal += wager.amount
+	} else {
+		data.optionBCount++
+		data.optionBTotal += wager.amount
+	}
+
+	await kv.set(summaryKey, data)
+
 	if (result === "OK") {
 		return wager
 	}
@@ -74,45 +103,24 @@ const listFrameWagers = async (frameId: string): Promise<{
 	optionBCount: number
 	optionATotal: number
 	optionBTotal: number
-	wagers: TGameWager[]
 } | undefined> => {
-	console.log('frameId: ', frameId)
+	
+	const gameSummaryKey = createGameSummaryKey(frameId)
 
-	const keys = await kv.keys(`wager:${frameId}:*`)
+	const _summary = await kv.get(gameSummaryKey)
 
-	let optionACount = 0
-	let optionBCount = 0
+	if (!_summary) {
+		return undefined
+	}
 
-	let optionATotal = 0
-	let optionBTotal = 0
+	const response = gameSummary.safeParse(_summary)
 
-	let wagers = []
-
-	for (const key of keys) {
-		const wager = await kv.get(key)
-
-		if (wager) {
-			const parsedWager = gameWager.safeParse(wager)
-
-			if (parsedWager.success) {
-				wagers.push(parsedWager.data)
-				if (parsedWager.data.option === 'a') {
-					optionACount++
-					optionATotal += parsedWager.data.amount
-				} else if (parsedWager.data.option === 'b') {
-					optionBCount++
-					optionBTotal += parsedWager.data.amount
-				}
-			}
-		}
+	if (!response.success) {
+		return undefined
 	}
 
 	return {
-		optionACount,
-		optionBCount,
-		optionATotal,
-		optionBTotal,
-		wagers,
+		...response.data
 	}
 }
 

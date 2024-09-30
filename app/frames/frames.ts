@@ -1,7 +1,6 @@
 import { farcasterHubContext } from 'frames.js/middleware'
 import { createFrames } from 'frames.js/next'
 import { DEFAULT_DEBUGGER_HUB_URL } from '../debug'
-import z from 'zod'
 import path from 'path'
 import * as fs from 'node:fs/promises'
 
